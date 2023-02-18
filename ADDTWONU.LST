@@ -1,4 +1,4 @@
-Turbo Assembler	 Version 4.1	    02/13/23 28:56:44	    Page 1
+Turbo Assembler	 Version 4.1	    02/18/23 17:36:05	    Page 1
 addtwonu.asm
 
 
@@ -12,194 +12,375 @@ addtwonu.asm
       7	0100  B8 B800		     Start:  mov ax, 0b800h
       8	0103  8E C0			     mov es, ax		     ;set es to	videomem seg
       9
-     10	0105  E8 0019			     call GetNum
-     11
-     12	0108  BB 0B51			     mov bx, 160d*17 + 160h/2 +	1
-     13	010B  B1 7E			     mov cl, 07eh
-     14	010D  50			     push ax		     ;save ax
-     15	010E  E8 0034			     call OutputNum10
-     16	0111  58			     pop ax
-     17
-     18	0112  B2 7E			     mov dl, 07eh
-     19	0114  BB 0BF1			     mov bx, 160d*18 + 160h/2 +	1
-     20	0117  E8 004A			     call OutputNum16
-     21
-     22	011A  BB 0C90			     mov bx, 160d*19 + 160h/2
-     23	011D  E8 0073			     call OutputNum2
-     24	0120  C3			     ret
-     25				     ;-------------------------------------------
-     26				     ;Get number from cmd
-     27				     ;
-     28				     ;Expects:	     label named buffer
-     29				     ;
-     30				     ;Entry:	     None
-     31				     ;
-     32				     ;Output:	     ax	- number
-     33				     ;
-     34				     ;Destroys:	     cx, dx, ax
-     35				     ;
-     36				     ;-------------------------------------------
-     37	0121			     GetNum  proc
-     38
-     39	0121  BA 0000r			     lea dx, buffer
-     40	0124  B4 0A			     mov ah, 0ah
-     41	0126  CD 21			     int 21h		     ;get number from cml
-     42
-     43	0128  33 C9			     xor cx, cx
-     44	012A  8A 0E 0001r		     mov cl, buffer[1]	     ;get length of number
-     45
-     46	012E  33 C0			     xor ax, ax
-     47	0130  BA 000A			     mov dx, 10d
-     48	0133  BE 0002			     mov si, 2h
+     10	0105  E8 0078			     call GetNum	     ;scanf("%d", ax)
+     11	0108  50			     push ax
+     12
+     13	0109  B4 02			     mov ah, 02h
+     14	010B  B2 0A			     mov dl, 0ah
+     15	010D  CD 21			     int 21h		     ;printf("\n");
+     16
+     17	010F  E8 006E			     call GetNum	     ;scanf("%d", ax)
+     18	0112  5B			     pop bx
+     19	0113  03 C3			     add ax, bx
+     20
+     21	0115  B5 0A			     mov ch, 0ah							     ;green on black
+     22	0117  BB 02EA			     mov bx, 160d*4 + 160d/2 + 13*2d
+     23	011A  BE 001Dr			     lea si, abplus
+     24	011D  BD 0003			     mov bp, 3
+     25	0120  E8 004D			     call OutputStr						     ;printf("a+b");
+     26
+     27	0123  BB 0408			     mov bx, 160d*6 + 160d/2 - 8d
+     28	0126  BE 0023r			     lea si, decimal
+     29	0129  BD 0003			     mov bp, 3
+     30	012C  E8 0041			     call OutputStr						     ;printf("dec");
+     31
+     32	012F  BB 04A8			     mov bx, 160d*7 + 160d/2 - 8d
+     33	0132  BE 0020r			     lea si, hex
+     34	0135  BD 0003			     mov bp, 3
+     35	0138  E8 0035			     call OutputStr						     ;printf("hex");
+     36
+     37	013B  BB 0548			     mov bx, 160d*8 + 160d/2 - 8d
+     38	013E  BE 0026r			     lea si, bin
+     39	0141  BD 0003			     mov bp, 3
+     40	0144  E8 0029			     call OutputStr						     ;printf("bin");
+     41
+     42	0147  50			     push ax
+     43
+     44	0148  BB 036E			     mov bx, 160*5 + 160d/2 - 2d
+     45	014B  B5 03			     mov ch, 3h								     ;height
+     46	014D  B1 10			     mov cl, 10h							     ;weight
+     47	014F  B6 0A			     mov dh, 0ah							     ;green on black
+     48	0151  E8 00A0			     call DrawFrame
      49
-     50	0136  F6 E2			     __Next: mul dl		     ;ax = ax*10
-     51	0138  8A B4 0000r			     mov dh, si	+ buffer     ;put in dh	next simbol
-     52	013C  80 EE 30				     sub dh, 48d	     ;convert simbol to	number
-     53	013F  02 C6				     add al, dh		     ;ax += dh
-     54
-     55	0141  46				     inc si
-     56	0142  E2 F2				     loop __Next
-     57	0144  C3			     ret
-Turbo Assembler	 Version 4.1	    02/13/23 28:56:44	    Page 2
+     50	0154  58			     pop ax
+     51
+     52	0155  50			     push ax									     ;save ax
+     53	0156  BB 0430			     mov  bx, 160d*6 + 160d/2 +	16*2d;
+     54	0159  B5 7A			     mov  ch, 7ah							     ;green on gray
+     55	015B  E8 0046			     call OutputNum10
+     56	015E  58			     pop ax
+     57
+Turbo Assembler	 Version 4.1	    02/18/23 17:36:05	    Page 2
 addtwonu.asm
 
 
 
-     58	0145				     endp
-     59
-     60				     ;-------------------------------------------
+     58	015F  B6 6A			     mov dh, 6ah							     ;green on brown
+     59	0161  BB 04D0			     mov bx, 160d*7 + 160d/2 + 16*2d;
+     60	0164  E8 005A			     call OutputNum16
      61
-     62				     ;-------------------------------------------
-     63				     ;Put number in dec	form in	videomem
-     64				     ;
-     65				     ;Expects:	     es->Videomem
-     66				     ;
-     67				     ;Entry:	     bx	- offset in videomem
-     68				     ;		     ax	- number for output
-     69				     ;		     cl	- color	atr for	output
-     70				     ;
-     71				     ;Output:	     None
-     72				     ;
-     73				     ;Destroys:	     si, di, dx, ax, bx
-     74				     ;
-     75				     ;-------------------------------------------
-     76	0145			     OutputNum10     proc
-     77	0145  33 F6			     xor si, si
-     78	0147  BF 000A			     mov di, 10d
-     79
-     80	014A  33 D2			     Next:   xor dx, dx
-     81	014C  F7 F7				     div di			     ;ax = ax/10
-     82										     ;dl = ax%10
+     62	0167  B6 7A			     mov dh, 7ah							     ;green on gray
+     63	0169  BB 0550			     mov bx, 160d*8 + 160d/2
+     64	016C  E8 0070			     call OutputNum2
+     65
+     66
+     67	016F  C3			     ret
+     68
+     69				     ;------------------------------------------------
+     70				     ;Put text form var	in vmem
+     71				     ;
+     72				     ;Expects: es->videomem
+     73				     ;
+     74				     ;Inputs: bx - offset
+     75				     ;		      ch - color atribut
+     76				     ;		      si - pointer to variable with text
+     77				     ;		      bp - length of string in var
+     78				     ;
+     79				     ;Output: None
+     80				     ;
+     81				     ;Destroys:	si, bx,	bp, cl
+     82				     ;------------------------------------------------
      83
-     84	014E  80 C2 30				     add dl, 48d		     ;make symbol from num
+     84	0170			     OutputStr	     proc
      85
-     86	0151  26: 88 57	FF			     mov byte ptr es:[bx-1], dl	     ;put symbol in vmem
-     87	0155  26: 88 0F				     mov byte ptr es:[bx],   cl	     ;put color	in vmem
-     88
-     89	0158  32 E4				     xor ah, ah
-     90	015A  83 EB 02				     sub bx, 2
-     91	015D  46				     inc si
+     86	0170  03 EE			     add bp, si
+     87	0172				     __next:									     ;
+     88	0172  8A 0C				     mov cl, [si]						     ;
+     89	0174  26: 89 0F				     mov word ptr es:[bx], cx				     ;
+     90	0177  83 C3 02				     add bx, 2								     ;
+     91	017A  46				     inc si								     ;
      92
-     93	015E  83 FE 05				     cmp si, 5
-     94	0161  7C E7				     jl	Next
-     95	0163  C3			     ret
-     96	0164				     endp
-     97
-     98				     ;----------------------------------------------
-     99				     ;Put number in hex	form in	videomem
-    100				     ;
-    101				     ;Expects:	     es->VideoMem
-    102				     ;
-    103				     ;Entry:	     bx	- offset in videomem
-    104				     ;		     ax	- number to output
-    105				     ;		     dl	- color	atr to output
-    106				     ;
-    107				     ;Output:	     None
-    108				     ;
-    109				     ;Destroys:	     si, bx, cx
-    110				     ;
-    111				     ;----------------------------------------------
-    112	0164			     OutputNum16     proc
-    113	0164  33 C9			     xor cx, cx
-    114	0166				     __Next:				     ;do
-Turbo Assembler	 Version 4.1	    02/13/23 28:56:44	    Page 3
+     93	017B  3B F5				     cmp si, bp							     ;
+     94	017D  75 F3				     jne __next								     ;
+     95
+     96	017F  C3			     ret
+     97	0180				     endp
+     98				     ;------------------------------------------------
+     99
+    100				     include SMALLIB.ASM
+1   101	0180			     .code
+1   102				     locals __
+1   103
+1   104				     ;-------------------------------------------
+1   105				     ;Get number from cmd
+1   106				     ;
+1   107				     ;Expects:	     label named buffer
+1   108				     ;
+1   109				     ;Entry:	     None
+1   110				     ;
+1   111				     ;Output:	     ax	- number
+1   112				     ;
+1   113				     ;Destroys:	     cx, dx, ax, di
+1   114				     ;
+Turbo Assembler	 Version 4.1	    02/18/23 17:36:05	    Page 3
 addtwonu.asm
 
 
 
-    115	0166  BE 000F				     mov si, 000fh
-    116
-    117	0169  D0 E1 D0 E1			     shl cl, 2			     ;cl = cl*4
-    118
-    119	016D  D3 E6				     shl si, cl
-    120	016F  23 F0				     and si, ax
-    121	0171  D3 EE				     shr si, cl
-    122	0173  83 C6 30				     add si, 48d		     ;number to	symbol
-    123
-    124	0176  D0 E9 D0 E9			     shr cl, 2			     ;cl = cl/4
-    125
-    126	017A  83 FE 3A				     cmp si, 58
-    127	017D  7C 03				     jl	Is_0_9
-    128	017F  83 C6 07				     add si, 7			     ; if(si > 58) si +=7
-    129	0182				     Is_0_9:
-    130
-    131	0182  26: 89 77	FF			     mov word ptr es:[bx-1], si	     ;put symb in vmem
-    132	0186  26: 88 17				     mov byte ptr es:[bx], dl	     ;put color	in vmem
-    133	0189  83 EB 02				     sub bx, 2			     ;bx -= 2
-    134
-    135	018C  41				     inc cx			     ;cx++
-    136	018D  83 F9 04				     cmp cx, 4h			     ;while(cx < 4)
-    137	0190  7C D4				     jl	__Next
-    138
-    139	0192  C3			     ret
-    140	0193				     endp
-    141				     ;----------------------------------------------
-    142
-    143				     ;----------------------------------------------
-    144				     ;Put number in binary form	in videomem
-    145				     ;
-    146				     ;Expects:	     es->VideoMem
-    147				     ;
-    148				     ;Entry:	     bx	- offset in videomem
-    149				     ;		     ax	- number to output
-    150				     ;		     dl	- color	atr to output
-    151				     ;
-    152				     ;Output:	     None
-    153				     ;
-    154				     ;Destroys:	     bx,cx,si
-    155				     ;----------------------------------------------
-    156	0193			     OutputNum2	     proc
-    157
-    158	0193  B9 0010			     mov cx, 10h	     ;set number of bits in number
-    159
-    160	0196  BE 0001			     __Next: mov si, 1
-    161	0199  49				     dec cx
-    162	019A  D3 E6				     shl si, cl			     ;si = 2^(cx-1)
-    163
-    164	019C  23 F0				     and si, ax
-    165	019E  D3 EE				     shr si, cl;		     ;si = (ax%(2^cx))/2^cx
-    166	01A0  41				     inc cx
-    167	01A1  83 C6 30				     add si, 48			     ;make char	from number
-    168
-    169	01A4  26: 89 37				     mov word ptr es:[bx],  si	     ;print 1 or 0
-    170	01A7  26: 88 57	01			     mov byte ptr es:[bx+1], dl	     ;put color	in vmem
-    171	01AB  83 C3 02				     add bx, 2
-Turbo Assembler	 Version 4.1	    02/13/23 28:56:44	    Page 4
+1   115				     ;-------------------------------------------
+1   116	0180			     GetNum  proc
+1   117
+1   118	0180  BA 0010r			     lea dx, buffer
+1   119	0183  B4 0A			     mov ah, 0ah
+1   120	0185  CD 21			     int 21h		     ;get number from cml
+1   121
+1   122	0187  33 C9			     xor cx, cx
+1   123	0189  8A 0E 0011r		     mov cl, buffer[1]	     ;get length of number
+1   124
+1   125	018D  33 C0			     xor ax, ax
+1   126	018F  BF 000A			     mov di, 10d
+1   127	0192  BE 0002			     mov si, 2h
+1   128
+1   129	0195				     __Next:
+1   130	0195  F7 E7				     mul di			     ;ax = ax*10
+1   131	0197  8A 94 0010r			     mov dl, si	+ buffer     ;put in dl	next simbol
+1   132	019B  80 EA 30				     sub dl, '0'		     ;convert simbol to	number
+1   133
+1   134	019E  03 C2				     add ax, dx		     ;ax += dh
+1   135
+1   136	01A0  46				     inc si
+1   137	01A1  E2 F2				     loop __Next
+1   138	01A3  C3			     ret
+1   139	01A4				     endp
+1   140
+1   141				     ;-------------------------------------------
+1   142
+1   143				     ;-------------------------------------------
+1   144				     ;Put number in dec	form in	videomem
+1   145				     ;
+1   146				     ;Expects:	     es->Videomem
+1   147				     ;
+1   148				     ;Entry:	     bx	- offset in videomem
+1   149				     ;			     ax	- number for output
+1   150				     ;			     ch	- color	atr for	output
+1   151				     ;
+1   152				     ;Output:	     None
+1   153				     ;
+1   154				     ;Destroys:	     ax, dx, bx, di, si
+1   155				     ;
+1   156				     ;-------------------------------------------
+1   157	01A4			     OutputNum10     proc
+1   158	01A4  BE 0005			     mov si, 5			     ;max length of number
+1   159	01A7  BF 000A			     mov di, 10d
+1   160
+1   161	01AA				     __next:
+1   162	01AA  33 D2				     xor dx, dx			     ;dx = 0
+1   163	01AC  F7 F7				     div di			     ;ax = dxax/10
+1   164											     ;dx = ax%10
+1   165
+1   166	01AE  80 C2 30				     add dl, '0'		     ;make symbol from num
+1   167	01B1  8A F5				     mov dh, ch			     ;set color
+1   168
+1   169	01B3  26: 89 57	FE			     mov word ptr es:[bx-2], dx	     ;put symbol in vmem
+1   170	01B7  83 EB 02				     sub bx, 2
+1   171
+Turbo Assembler	 Version 4.1	    02/18/23 17:36:05	    Page 4
 addtwonu.asm
 
 
 
-    172	01AE  E2 E6				     loop __Next
-    173
-    174	01B0  C3			     ret
-    175	01B1				     endp
-    176				     ;----------------------------------------------
-    177
-    178	01B1			     .data
-    179	0000  05 ?? 05*(20)		     buffer db 5, ?, 5 dup(' ')
-    180
-    181				     end Start
-Turbo Assembler	 Version 4.1	    02/13/23 28:56:44	    Page 5
+1   172	01BA  4E				     dec si
+1   173	01BB  83 FE 00				     cmp si, 0
+1   174	01BE  75 EA				     jne __next				     ;for(int si = 5; si != 0; si--)
+1   175	01C0  C3			     ret
+1   176	01C1				     endp
+1   177
+1   178				     ;----------------------------------------------
+1   179				     ;Put number in hex	form in	videomem
+1   180				     ;
+1   181				     ;Expects:	     es->VideoMem
+1   182				     ;
+1   183				     ;Entry:	     bx	- offset in videomem
+1   184				     ;			     ax	- number to output
+1   185				     ;			     dh	- color	atr to output
+1   186				     ;
+1   187				     ;Output:	     None
+1   188				     ;
+1   189				     ;Destroys:	     ax, dx, bx, cx, si
+1   190				     ;
+1   191				     ;----------------------------------------------
+1   192	01C1			     OutputNum16     proc
+1   193	01C1  B9 0004			     mov cx, 4				     ;length of	hex number
+1   194	01C4				     __Next:				     ;do
+1   195	01C4  BE 000F				     mov si, 000fh
+1   196	01C7  23 F0				     and si, ax					     ;get new number
+1   197
+1   198	01C9  8A 94 0000r			     mov dl, int_to_char_hex[si] ;make char from int
+1   199
+1   200	01CD  26: 89 57	FE			     mov word ptr es:[bx-2], dx	     ;put symb in vmem
+1   201	01D1  83 EB 02				     sub bx, 2					     ;bx -= 2
+1   202
+1   203	01D4  D1 C8 D1 C8 D1 C8	D1+		     ror ax, 4
+    204	      C8
+1   205	01DC  E2 E6				     loop __Next
+1   206
+1   207	01DE  C3			     ret
+1   208	01DF				     endp
+1   209
+1   210	01DF			     .data
+1   211	0000  30 31 32 33 34 35	36+	     int_to_char_hex db	"0123456789ABCDEF"
+    212	      37 38 39 41 42 43	44+
+    213	      45 46
+1   214
+1   215	0010			     .code
+1   216				     ;----------------------------------------------
+1   217
+1   218				     ;----------------------------------------------
+1   219				     ;Put number in binary form	in videomem
+1   220				     ;
+1   221				     ;Expects:	     es->VideoMem
+1   222				     ;
+1   223				     ;Entry:	     bx	- offset in videomem
+1   224				     ;		     ax	- number to output
+1   225				     ;		     dh	- color	atr to output
+1   226				     ;
+1   227				     ;Output:	     None
+1   228				     ;
+Turbo Assembler	 Version 4.1	    02/18/23 17:36:05	    Page 5
+addtwonu.asm
+
+
+
+1   229				     ;Destroys:	     ax, bx,cx,	dl
+1   230				     ;----------------------------------------------
+1   231	01DF			     OutputNum2	     proc
+1   232
+1   233	01DF  B9 0010			     mov cx, 10h	     ;set number of bits in number
+1   234
+1   235	01E2				     __Next:
+1   236	01E2  B2 01				     mov dl, 1
+1   237	01E4  22 D0				     and dl, al			     ;get last number
+1   238	01E6  80 C2 30				     add dl, '0'		     ;make char	from number
+1   239
+1   240	01E9  D1 C8				     ror ax, 1
+1   241	01EB  26: 89 17				     mov word ptr es:[bx], dx	     ;print 1 or 0
+1   242
+1   243	01EE  83 C3 02				     add bx, 2
+1   244	01F1  E2 EF				     loop __Next
+1   245
+1   246	01F3  C3			     ret
+1   247	01F4				     endp
+1   248				     ;----------------------------------------------
+1   249
+1   250	01F4			     .data
+1   251	0010  05 ?? 05*(20)		     buffer db 5, ?, 5 dup(' ')
+1   252
+1   253	0017			     .code
+1   254
+1   255				     ;------------------------------------------
+1   256				     ;DrawFrame
+1   257				     ;------------------------------------------
+1   258				     ;Expects: es->videomemory
+1   259				     ;
+1   260				     ;Entry: bx	- offset in vmem
+1   261				     ;		     ch	- height of frame
+1   262				     ;		     cl	- weight of fram
+1   263				     ;		     dh	- color	atr
+1   264				     ;
+1   265				     ;Output: None
+1   266				     ;
+1   267				     ;Destroys:	bx, ax,	dx,
+1   268				     ;------------------------------------------
+1   269
+1   270	01F4			     DrawFrame	     proc
+1   271
+1   272	01F4  32 E4			     xor ah, ah	     ;y	offset
+1   273	01F6  32 C0			     xor al, al	     ;x	offset
+1   274
+1   275	01F8  8A 16 0017r		     mov dl, frame		;left upper corner
+1   276	01FC  26: 89 17			     mov word ptr es:[bx], dx
+1   277	01FF  83 C3 02			     add bx, 2
+1   278
+1   279	0202  8A 16 001Br		     mov dl, frame[4]	     ;horisontal border
+1   280
+1   281	0206				     next_top:				     ;draw top
+1   282	0206  26: 89 17				     mov word ptr es:[bx], dx
+1   283
+1   284	0209  FE C0				     inc al
+1   285	020B  83 C3 02				     add bx, 2
+Turbo Assembler	 Version 4.1	    02/18/23 17:36:05	    Page 6
+addtwonu.asm
+
+
+
+1   286	020E  3A C1				     cmp al, cl
+1   287	0210  7C F4				     jl	next_top
+1   288
+1   289	0212  8A 16 0018r		     mov dl, frame[1]		     ;right top	corner
+1   290	0216  26: 89 17			     mov word ptr es:[bx], dx
+1   291
+1   292	0219  81 C3 00A0		     add bx, 160d		     ;new line
+1   293	021D  8A 16 001Cr		     mov dl, frame[5]		     ;vertical border
+1   294
+1   295	0221				     next_right:		     ;draw right
+1   296	0221  26: 89 17				     mov word ptr es:[bx], dx
+1   297
+1   298	0224  FE C4				     inc ah
+1   299	0226  81 C3 00A0			     add bx, 160d
+1   300	022A  3A E5				     cmp ah, ch
+1   301	022C  7C F3				     jl	next_right
+1   302
+1   303	022E  8A 16 001Ar		     mov dl, frame[3]		     ;right bottom corner
+1   304	0232  26: 89 17			     mov word ptr es:[bx], dx
+1   305	0235  83 EB 02			     sub bx, 2d
+1   306
+1   307	0238  8A 16 001Br		     mov dl, frame[4]
+1   308
+1   309	023C				     next_bottom:		     ;draw bottom
+1   310	023C  26: 89 17				     mov word ptr es:[bx], dx
+1   311
+1   312	023F  FE C8				     dec al
+1   313	0241  83 EB 02				     sub bx, 2d
+1   314	0244  3C 00				     cmp al, 0
+1   315	0246  77 F4				     ja	next_bottom
+1   316
+1   317	0248  8A 16 0019r		     mov dl, frame[2]		     ;left bottom corner
+1   318	024C  26: 89 17			     mov word ptr es:[bx], dx
+1   319	024F  81 EB 00A0		     sub bx, 160d
+1   320
+1   321	0253  8A 16 001Cr		     mov dl, frame[5]		     ;vertical border
+1   322
+1   323	0257				     next_left:				     ;draw left
+1   324	0257  26: 89 17				     mov word ptr es:[bx], dx
+1   325
+1   326	025A  FE CC				     dec ah
+1   327	025C  81 EB 00A0			     sub bx, 160d
+1   328	0260  80 FC 00				     cmp ah, 0
+1   329	0263  77 F2				     ja	next_left
+1   330
+1   331	0265  C3			     ret
+1   332	0266				     endp
+1   333
+1   334	0266			     .data
+1   335	0017  C9 BB C8 BC CD BA	     frame db 0c9h, 0bbh, 0c8h,	0bch, 0cdh, 0bah
+1   336				     ;	      _	     _	    |_	  _|   =   ||
+1   337				     ;	     |	      |
+1   338
+1   339	001D			     .code
+    340
+    341	0266			     .data
+    342	001D  61 2B 62			     abplus  db	"a+b"
+Turbo Assembler	 Version 4.1	    02/18/23 17:36:05	    Page 7
+addtwonu.asm
+
+
+
+    343	0020  68 65 78			     hex     db	"hex"
+    344	0023  64 65 63			     decimal db	"dec"
+    345	0026  62 69 6E			     bin	     db	"bin"
+    346
+    347				     end Start
+Turbo Assembler	 Version 4.1	    02/18/23 17:36:05	    Page 8
 Symbol Table
 
 
@@ -207,9 +388,9 @@ Symbol Table
 
 Symbol Name			  Type	 Value
 
-??DATE				  Text	 "02/13/23"
+??DATE				  Text	 "02/18/23"
 ??FILENAME			  Text	 "addtwonu"
-??TIME				  Text	 "28:56:44"
+??TIME				  Text	 "17:36:05"
 ??VERSION			  Number 040A
 @32BIT				  Text	 0
 @CODE				  Text	 DGROUP
@@ -223,21 +404,33 @@ Symbol Name			  Type	 Value
 @MODEL				  Text	 1
 @STACK				  Text	 DGROUP
 @WORDSIZE			  Text	 2
-BUFFER				  Byte	 DGROUP:0000
-GETNUM				  Near	 DGROUP:0121
-IS_0_9				  Near	 DGROUP:0182
-NEXT				  Near	 DGROUP:014A
-OUTPUTNUM10			  Near	 DGROUP:0145
-OUTPUTNUM16			  Near	 DGROUP:0164
-OUTPUTNUM2			  Near	 DGROUP:0193
+ABPLUS				  Byte	 DGROUP:001D
+BIN				  Byte	 DGROUP:0026
+BUFFER				  Byte	 DGROUP:0010
+DECIMAL				  Byte	 DGROUP:0023
+DRAWFRAME			  Near	 DGROUP:01F4
+FRAME				  Byte	 DGROUP:0017
+GETNUM				  Near	 DGROUP:0180
+HEX				  Byte	 DGROUP:0020
+INT_TO_CHAR_HEX			  Byte	 DGROUP:0000
+NEXT_BOTTOM			  Near	 DGROUP:023C
+NEXT_LEFT			  Near	 DGROUP:0257
+NEXT_RIGHT			  Near	 DGROUP:0221
+NEXT_TOP			  Near	 DGROUP:0206
+OUTPUTNUM10			  Near	 DGROUP:01A4
+OUTPUTNUM16			  Near	 DGROUP:01C1
+OUTPUTNUM2			  Near	 DGROUP:01DF
+OUTPUTSTR			  Near	 DGROUP:0170
 START				  Near	 DGROUP:0100
-__NEXT				  Near	 DGROUP:0136
-__NEXT				  Near	 DGROUP:0166
-__NEXT				  Near	 DGROUP:0196
+__NEXT				  Near	 DGROUP:0172
+__NEXT				  Near	 DGROUP:0195
+__NEXT				  Near	 DGROUP:01AA
+__NEXT				  Near	 DGROUP:01C4
+__NEXT				  Near	 DGROUP:01E2
 
 Groups & Segments		  Bit Size Align  Combine Class
 
 DGROUP				  Group
-  _DATA				  16  0007 Word	  Public  DATA
-  _TEXT				  16  01B1 Word	  Public  CODE
+  _DATA				  16  0029 Word	  Public  DATA
+  _TEXT				  16  0266 Word	  Public  CODE
 
